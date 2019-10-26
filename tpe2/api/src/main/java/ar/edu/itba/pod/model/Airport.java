@@ -7,12 +7,12 @@ public class Airport {
     private final String type;
     private final String name;
     private final String coordinates;
-    private final double latitude;
-    private final double longitude;
-    private final double altitude;
+    private final Double latitude;
+    private final Double longitude;
+    private final Double altitude;
     private final String altitudeUnit;
     private final String referenceCity;
-    private final double referenceDistance;
+    private final Double referenceDistance;
     private final String referenceDirection;
     private final String condition;
     private final String control;
@@ -25,7 +25,12 @@ public class Airport {
     private final String province;
     private final String inhabilitated;
 
-    public Airport(String localDesignator, String OACIDesignator, String IATADesignator, String type, String name, String coordinates, double latitude, double longitude, double altitude, String altitudeUnit, String referenceCity, double referenceDistance, String referenceDirection, String condition, String control, String region, String FIR, String usage, String traffic, String SNA, String concessioned, String province, String inhabilitated) {
+    public Airport(String localDesignator, String OACIDesignator, String IATADesignator,
+                   String type, String name, String coordinates, Double latitude,
+                   Double longitude, Double altitude, String altitudeUnit, String referenceCity,
+                   Double referenceDistance, String referenceDirection, String condition,
+                   String control, String region, String FIR, String usage, String traffic,
+                   String SNA, String concessioned, String province, String inhabilitated) {
         this.localDesignator = localDesignator;
         this.OACIDesignator = OACIDesignator;
         this.IATADesignator = IATADesignator;
@@ -49,6 +54,35 @@ public class Airport {
         this.concessioned = concessioned;
         this.province = province;
         this.inhabilitated = inhabilitated;
+    }
+
+    @Override
+    public String toString() {
+        return "Airport{" +
+                "localDesignator='" + localDesignator + '\'' +
+                ", OACIDesignator='" + OACIDesignator + '\'' +
+                ", IATADesignator='" + IATADesignator + '\'' +
+                ", type='" + type + '\'' +
+                ", name='" + name + '\'' +
+                ", coordinates='" + coordinates + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", altitude=" + altitude +
+                ", altitudeUnit='" + altitudeUnit + '\'' +
+                ", referenceCity='" + referenceCity + '\'' +
+                ", referenceDistance=" + referenceDistance +
+                ", referenceDirection='" + referenceDirection + '\'' +
+                ", condition='" + condition + '\'' +
+                ", control='" + control + '\'' +
+                ", region='" + region + '\'' +
+                ", FIR='" + FIR + '\'' +
+                ", usage='" + usage + '\'' +
+                ", traffic='" + traffic + '\'' +
+                ", SNA='" + SNA + '\'' +
+                ", concessioned='" + concessioned + '\'' +
+                ", province='" + province + '\'' +
+                ", inhabilitated='" + inhabilitated + '\'' +
+                '}';
     }
 
     public String getLocalDesignator() {

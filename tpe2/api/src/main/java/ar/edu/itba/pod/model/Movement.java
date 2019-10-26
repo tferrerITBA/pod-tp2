@@ -23,6 +23,21 @@ public class Movement {
         this.airshipName = airshipName;
     }
 
+    @Override
+    public String toString() {
+        return "Movement{" +
+                "movementDate='" + movementDate + '\'' +
+                ", movementTime='" + movementTime + '\'' +
+                ", flightType='" + flightType + '\'' +
+                ", flightClassification='" + flightClassification + '\'' +
+                ", movementType='" + movementType + '\'' +
+                ", OACIOrigin='" + OACIOrigin + '\'' +
+                ", OACIDestination='" + OACIDestination + '\'' +
+                ", airlineName='" + airlineName + '\'' +
+                ", airshipName='" + airshipName + '\'' +
+                '}';
+    }
+
     public String getMovementDate() {
         return movementDate;
     }
