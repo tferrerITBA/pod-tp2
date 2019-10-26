@@ -15,13 +15,14 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>1.7.12</slf4j.version>
+    <hazelcast.version>3.7.8</hazelcast.version>
   </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast-all</artifactId>
-        <version>3.8.6</version>
+        <version>${hazelcast.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
