@@ -17,9 +17,7 @@ public class Server {
 
         //Example from the documentation
 
-       Config cfg = new Config();
-       cfg.getGroupConfig().setName("g5").setPassword("12345678");
-        HazelcastInstance instance = Hazelcast.newHazelcastInstance(cfg);
+        HazelcastInstance instance = Hazelcast.newHazelcastInstance();
         Map<Integer, String> mapCustomers = instance.getMap("customers");
         mapCustomers.put(1, "Joe");
         mapCustomers.put(2, "Ali");

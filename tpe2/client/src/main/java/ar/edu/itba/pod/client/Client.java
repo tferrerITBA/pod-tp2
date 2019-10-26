@@ -8,16 +8,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Client {
-    private static Logger logger = LoggerFactory.getLogger(Client.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
 
     public static void main(String[] args) {
-        logger.info("tpe2 Client Starting ...");
+        LOGGER.info("tpe2 Client Starting ...");
+        if(args.length < 1) {
+            System.err.println("Expected server IP address as first and only argument.");
+            System.exit(1);
+        }
 
         //Example from the documentation
 
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.getGroupConfig().setName("g5").setPassword("12345678");
-        clientConfig.getNetworkConfig().addAddress("192.168.1.18");
+        clientConfig.getNetworkConfig().addAddress(args[0]);
 
         HazelcastInstance client = HazelcastClient.newHazelcastClient( clientConfig );
 
