@@ -21,7 +21,7 @@ java -cp 'lib/jars/*' "ar.edu.itba.pod.server.Server" $*
 cd client/target
 tar xzf tpe2-client-1.0-SNAPSHOT-bin.tar.gz
 cd tpe2-client-1.0-SNAPSHOT-bin/tpe2-client-1.0-SNAPSHOT
-java -cp 'lib/jars/*' "ar.edu.itba.pod.client.Client" $*
+java -cp 'lib/jars/*' "ar.edu.itba.pod.client.Client" <NODE_IP_ADDRESS>
 ```
 
 ## Installing Hazelcast Management Center v3.7.8 (Docker Image)
