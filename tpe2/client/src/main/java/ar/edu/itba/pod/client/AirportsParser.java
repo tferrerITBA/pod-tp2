@@ -14,9 +14,11 @@ public class AirportsParser implements CsvParser<Airport> {
     public List<Airport> parseCsv(final String path) throws IOException, InvalidCsvException {
         List<Airport> airports = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(path))) {
-            String line;
+            String line = br.readLine(); // First line consists of headers only
+            if(line == null)
+                throw new InvalidCsvException("Invalid CSV file. First line is empty.", path, 0, line);
 
-            for(int i = 0; (line = br.readLine()) != null; i++) {
+            for(int i = 1; (line = br.readLine()) != null; i++) {
                 String[] airportStr = line.split(SEPARATOR);
                 try {
                     Airport airport = new Airport(
