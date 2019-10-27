@@ -7,9 +7,9 @@ import com.hazelcast.nio.serialization.DataSerializable;
 import java.io.IOException;
 
 public class Airport implements DataSerializable {
-    private final String OACIDesignator;
-    private final String name;
-    private final String province;
+    private String OACIDesignator;
+    private String name;
+    private String province;
 
     public Airport(String OACIDesignator, String name, String province) {
         this.OACIDesignator = OACIDesignator;
@@ -47,6 +47,8 @@ public class Airport implements DataSerializable {
 
     @Override
     public void readData(ObjectDataInput in) throws IOException {
-
+        OACIDesignator = in.readUTF();
+        name = in.readUTF();
+        province = in.readUTF();
     }
 }
