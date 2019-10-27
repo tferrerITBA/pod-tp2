@@ -1,6 +1,8 @@
 package ar.edu.itba.pod.model;
 
-public class Movement {
+import java.io.Serializable;
+
+public class Movement implements Serializable {
     private final String movementDate;
     private final String movementTime;
     private final String flightType;

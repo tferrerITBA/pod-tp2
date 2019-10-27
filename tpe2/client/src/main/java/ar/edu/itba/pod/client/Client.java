@@ -5,18 +5,21 @@ import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
+import com.hazelcast.core.IList;
+import com.hazelcast.mapreduce.JobTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 
 public class Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
     private static String[] serverAddresses;
+    private static Mode mode;
     private static Path inputDirectory;
     private static Path outputDirectory;
     private static final String AP_INPUT_FILENAME = "aeropuertos.csv";
@@ -35,7 +38,7 @@ public class Client {
         clientConfig.getGroupConfig().setName("g5").setPassword("12345678");
         clientConfig.getNetworkConfig().addAddress(serverAddresses);
 
-        HazelcastInstance client = HazelcastClient.newHazelcastClient( clientConfig );
+        HazelcastInstance hz = HazelcastClient.newHazelcastClient(clientConfig);
 
         parseInputFiles();
         System.out.println(airports.size() + "  " + airports.get(0));
@@ -43,16 +46,56 @@ public class Client {
         System.out.println(movements.size() + "  " + movements.get(0));
         System.out.println("  " + movements.get(1));
 
-        IMap map = client.getMap( "customers" );
-        System.out.println( "Map Size:" + map.size() );
+        Instant now = Instant.now();
+
+        final IList<Airport> remoteAirports = hz.getList("ap-" + now);
+        final IList<Movement> remoteMovements = hz.getList("mv-" + now);
+        remoteAirports.addAll(airports);
+        remoteMovements.addAll(movements);
+
+        JobTracker t = hz.getJobTracker(mode.toString() + "-" + now);
+
+        switch (mode) {
+            case QUERY_1:
+                break;
+            case QUERY_2:
+                break;
+            case QUERY_3:
+                break;
+            case QUERY_4:
+                break;
+            case QUERY_5:
+                break;
+            case QUERY_6:
+                break;
+        }
+
+
+        System.out.println("List Size:" + remoteAirports.size());
     }
 
     private static boolean parseArguments() {
         boolean success;
         success = parseServerAddress();
+        success &= parseMode();
         success &= parseInputDirectory();
         success &= parseOutputDirectory();
         return success;
+    }
+
+    private static boolean parseMode() {
+        String modeStr = System.getProperty("query");
+        if(modeStr == null) {
+            LOGGER.error("Mode must be present.");
+            return false;
+        }
+        try {
+            mode = Mode.valueOf("QUERY_" + modeStr);
+        } catch (Exception e) {
+            LOGGER.error("Mode must be a number between 1 and 6.");
+            return false;
+        }
+        return true;
     }
 
     private static boolean parseServerAddress() {
