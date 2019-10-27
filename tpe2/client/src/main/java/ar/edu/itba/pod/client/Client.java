@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.client;
 
+import ar.edu.itba.pod.client.queries.Query1;
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.client.HazelcastClient;
@@ -14,7 +15,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
@@ -48,15 +51,13 @@ public class Client {
 
         Instant now = Instant.now();
 
-        final IList<Airport> remoteAirports = hz.getList("ap-" + now);
-        final IList<Movement> remoteMovements = hz.getList("mv-" + now);
-        remoteAirports.addAll(airports);
-        remoteMovements.addAll(movements);
-
-        JobTracker t = hz.getJobTracker(mode.toString() + "-" + now);
+        JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
 
         switch (mode) {
             case QUERY_1:
+                final IList<Movement> remoteMovements = hz.getList("mv-" + now);
+                remoteMovements.addAll(movements);
+                new Query1(airports, remoteMovements, jobTracker).execute();
                 break;
             case QUERY_2:
                 break;
@@ -69,9 +70,6 @@ public class Client {
             case QUERY_6:
                 break;
         }
-
-
-        System.out.println("List Size:" + remoteAirports.size());
     }
 
     private static boolean parseArguments() {
