@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MovementsParser implements CsvParser<Movement> {
+    private static final int FLIGHT_TYPE_INDEX = 2;
+    private static final int FLIGHT_CLASSIFICATION_INDEX = 3;
+    private static final int MOVEMENT_TYPE_INDEX = 4;
+    private static final int OACI_ORIGIN_INDEX = 5;
+    private static final int OACI_DESTINATION_INDEX = 6;
+    private static final int AIRLINE_NAME_INDEX = 7;
 
     @Override
     public List<Movement> parseCsv(final String path) throws IOException, InvalidCsvException {
@@ -22,15 +28,12 @@ public class MovementsParser implements CsvParser<Movement> {
                 String[] movementStr = line.split(SEPARATOR);
                 try {
                     Movement movement = new Movement(
-                            movementStr[0],
-                            movementStr[1],
-                            movementStr[2],
-                            movementStr[3],
-                            movementStr[4],
-                            movementStr[5],
-                            movementStr[6],
-                            movementStr[7],
-                            movementStr[8]
+                            movementStr[FLIGHT_TYPE_INDEX],
+                            movementStr[FLIGHT_CLASSIFICATION_INDEX],
+                            movementStr[MOVEMENT_TYPE_INDEX],
+                            movementStr[OACI_ORIGIN_INDEX],
+                            movementStr[OACI_DESTINATION_INDEX],
+                            movementStr[AIRLINE_NAME_INDEX]
                     );
                     movements.add(movement);
                 } catch(IllegalArgumentException e) {
