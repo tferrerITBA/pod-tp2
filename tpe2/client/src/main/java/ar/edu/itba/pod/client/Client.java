@@ -39,7 +39,9 @@ public class Client {
 
         parseInputFiles();
         System.out.println(airports.size() + "  " + airports.get(0));
+        System.out.println("  " + airports.get(1));
         System.out.println(movements.size() + "  " + movements.get(0));
+        System.out.println("  " + movements.get(1));
 
         IMap map = client.getMap( "customers" );
         System.out.println( "Map Size:" + map.size() );
@@ -86,7 +88,7 @@ public class Client {
     private static void parseInputFiles() {
         try {
             airports = new AirportsParser().parseCsv(concatPath(inputDirectory, AP_INPUT_FILENAME));
-            movements = new MovementsParser().parseCsv(concatPath(outputDirectory, MOV_INPUT_FILENAME));
+            movements = new MovementsParser().parseCsv(concatPath(inputDirectory, MOV_INPUT_FILENAME));
         } catch(IOException e) {
             LOGGER.error("Error reading input file.");
             e.printStackTrace();
