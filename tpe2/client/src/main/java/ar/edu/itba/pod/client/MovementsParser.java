@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MovementsParser implements CsvParser<Movement> {
+    private static final int MOVEMENT_DATE_INDEX = 0;
+    private static final int MOVEMENT_TIME_INDEX = 1;
     private static final int FLIGHT_TYPE_INDEX = 2;
     private static final int FLIGHT_CLASSIFICATION_INDEX = 3;
     private static final int MOVEMENT_TYPE_INDEX = 4;
@@ -28,6 +30,8 @@ public class MovementsParser implements CsvParser<Movement> {
                 String[] movementStr = line.split(SEPARATOR);
                 try {
                     Movement movement = new Movement(
+                            movementStr[MOVEMENT_DATE_INDEX],
+                            movementStr[MOVEMENT_TIME_INDEX],
                             movementStr[FLIGHT_TYPE_INDEX],
                             movementStr[FLIGHT_CLASSIFICATION_INDEX],
                             movementStr[MOVEMENT_TYPE_INDEX],

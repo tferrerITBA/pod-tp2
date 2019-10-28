@@ -7,6 +7,7 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
+import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.JobTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +56,9 @@ public class Client {
 
         switch (mode) {
             case QUERY_1:
-                final IList<Movement> remoteMovements = hz.getList("mv-" + now);
-                remoteMovements.addAll(movements);
-                new Query1(airports, remoteMovements, jobTracker).execute();
+                final IMap<String, Movement> remoteMovements = hz.getMap("mv-" + now);
+                movements.forEach(mov -> remoteMovements.put(mov.getKey(), mov));
+                new Query1(airports, remoteMovements, jobTracker, concatPath(outputDirectory, "query1.csv")).execute();
                 break;
             case QUERY_2:
                 break;

@@ -11,6 +11,10 @@ public class Airport implements DataSerializable {
     private String name;
     private String province;
 
+    public Airport() {
+
+    }
+
     public Airport(String OACIDesignator, String name, String province) {
         this.OACIDesignator = OACIDesignator;
         this.name = name;

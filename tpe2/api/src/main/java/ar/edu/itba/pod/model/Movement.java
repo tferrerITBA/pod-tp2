@@ -7,6 +7,8 @@ import com.hazelcast.nio.serialization.DataSerializable;
 import java.io.IOException;
 
 public class Movement implements DataSerializable {
+    private String movementDate;
+    private String movementTime;
     private String flightType;
     private String flightClassification;
     private String movementType;
@@ -14,8 +16,15 @@ public class Movement implements DataSerializable {
     private String OACIDestination;
     private String airlineName;
 
-    public Movement(String flightType, String flightClassification, String movementType,
+    public Movement() {
+
+    }
+
+    public Movement(String movementDate, String movementTime, String flightType,
+                    String flightClassification, String movementType,
                     String OACIOrigin, String OACIDestination, String airlineName) {
+        this.movementDate = movementDate;
+        this.movementTime = movementTime;
         this.flightType = flightType;
         this.flightClassification = flightClassification;
         this.movementType = movementType;
@@ -24,10 +33,17 @@ public class Movement implements DataSerializable {
         this.airlineName = airlineName;
     }
 
+    public String getKey() { // ARREGLAR
+        return movementDate + movementTime + flightType + flightClassification
+                + movementType + OACIOrigin + OACIDestination + airlineName;
+    }
+
     @Override
     public String toString() {
         return "Movement{" +
-                "flightType='" + flightType + '\'' +
+                "movementDate='" + movementDate + '\'' +
+                ", movementTime='" + movementTime + '\'' +
+                ", flightType='" + flightType + '\'' +
                 ", flightClassification='" + flightClassification + '\'' +
                 ", movementType='" + movementType + '\'' +
                 ", OACIOrigin='" + OACIOrigin + '\'' +
@@ -35,6 +51,10 @@ public class Movement implements DataSerializable {
                 ", airlineName='" + airlineName + '\'' +
                 '}';
     }
+
+    public String getMovementDate() { return movementDate; }
+
+    public String getMovementTime() { return movementTime; }
 
     public String getFlightType() {
         return flightType;
@@ -62,6 +82,8 @@ public class Movement implements DataSerializable {
 
     @Override
     public void writeData(ObjectDataOutput out) throws IOException {
+        out.writeUTF(movementDate);
+        out.writeUTF(movementTime);
         out.writeUTF(flightType);
         out.writeUTF(flightClassification);
         out.writeUTF(movementType);
@@ -72,6 +94,8 @@ public class Movement implements DataSerializable {
 
     @Override
     public void readData(ObjectDataInput in) throws IOException {
+        movementDate = in.readUTF();
+        movementTime = in.readUTF();
         flightType = in.readUTF();
         flightClassification = in.readUTF();
         movementType = in.readUTF();
