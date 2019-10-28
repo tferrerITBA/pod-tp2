@@ -36,29 +36,28 @@ public class Client {
         if(!parseArguments())
             System.exit(1);
 
-        //Example from the documentation
-
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.getGroupConfig().setName("g5").setPassword("12345678");
         clientConfig.getNetworkConfig().addAddress(serverAddresses);
-
         HazelcastInstance hz = HazelcastClient.newHazelcastClient(clientConfig);
 
+        LOGGER.info("Inicio de la lectura del archivo");
         parseInputFiles();
-        System.out.println(airports.size() + "  " + airports.get(0));
-        System.out.println("  " + airports.get(1));
-        System.out.println(movements.size() + "  " + movements.get(0));
-        System.out.println("  " + movements.get(1));
+        LOGGER.info("Fin de lectura del archivo");
 
         Instant now = Instant.now();
-
         JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
-
         switch (mode) {
             case QUERY_1:
                 final IMap<String, Movement> remoteMovements = hz.getMap("mv-" + now);
                 movements.forEach(mov -> remoteMovements.put(mov.getKey(), mov));
-                new Query1(airports, remoteMovements, jobTracker, concatPath(outputDirectory, "query1.csv")).execute();
+
+                LOGGER.info("Inicio del trabajo map/reduce");
+                new Query1(airports, remoteMovements, jobTracker,
+                        concatPath(outputDirectory, "query1.csv")).execute();
+                LOGGER.info("Fin del trabajo map/reduce");
+
+                remoteMovements.destroy();
                 break;
             case QUERY_2:
                 break;

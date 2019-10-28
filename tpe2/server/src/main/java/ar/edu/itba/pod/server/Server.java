@@ -10,28 +10,11 @@ import java.util.Map;
 import java.util.Queue;
 
 public class Server {
-    private static Logger logger = LoggerFactory.getLogger(Server.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
 
     public static void main(String[] args) {
-        logger.info("tpe2 Server Starting ...");
-
-        //Example from the documentation
+        LOGGER.info("tpe2 Server Starting ...");
 
         HazelcastInstance instance = Hazelcast.newHazelcastInstance();
-        Map<Integer, String> mapCustomers = instance.getMap("customers");
-        mapCustomers.put(1, "Joe");
-        mapCustomers.put(2, "Ali");
-        mapCustomers.put(3, "Avi");
-
-        System.out.println("Customer with key 1: "+ mapCustomers.get(1));
-        System.out.println("Map Size:" + mapCustomers.size());
-
-        Queue<String> queueCustomers = instance.getQueue("customers");
-        queueCustomers.offer("Tom");
-        queueCustomers.offer("Mary");
-        queueCustomers.offer("Jane");
-        System.out.println("First customer: " + queueCustomers.poll());
-        System.out.println("Second customer: "+ queueCustomers.peek());
-        System.out.println("Queue size: " + queueCustomers.size());
     }
 }
