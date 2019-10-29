@@ -5,6 +5,7 @@ import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Movement implements DataSerializable {
     private String movementDate;
@@ -102,5 +103,34 @@ public class Movement implements DataSerializable {
         OACIOrigin = in.readUTF();
         OACIDestination = in.readUTF();
         airlineName = in.readUTF();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(this == other)
+            return true;
+        if(!(other instanceof Movement))
+            return false;
+        Movement o = (Movement) other;
+        return this.movementDate.equals(o.getMovementDate()) &&
+            this.movementTime.equals(o.getMovementTime()) &&
+            this.flightType.equals(o.getFlightType()) &&
+            this.flightClassification.equals(o.getFlightClassification()) &&
+            this.movementType.equals(o.getMovementType()) &&
+            this.OACIOrigin.equals(o.getOACIOrigin()) &&
+            this.OACIDestination.equals(o.getOACIDestination()) &&
+            this.airlineName.equals(o.getAirlineName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.movementDate,
+                            this.movementTime,
+                            this.flightType,
+                            this.flightClassification,
+                            this.movementType,
+                            this.OACIOrigin,
+                            this.OACIDestination,
+                            this.airlineName);
     }
 }
