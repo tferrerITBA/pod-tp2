@@ -34,11 +34,6 @@ public class Movement implements DataSerializable {
         this.airlineName = airlineName;
     }
 
-    public String getKey() { // ARREGLAR
-        return movementDate + movementTime + flightType + flightClassification
-                + movementType + OACIOrigin + OACIDestination + airlineName;
-    }
-
     @Override
     public String toString() {
         return "Movement{" +

@@ -4,10 +4,10 @@ import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
-public class Query1Mapper implements Mapper<String, Movement, String, Long> {
+public class Query1Mapper implements Mapper<Integer, Movement, String, Long> {
 
     @Override
-    public void map(String key, Movement movement, Context<String, Long> context) {
+    public void map(Integer key, Movement movement, Context<String, Long> context) {
         if(movement.getMovementType().equalsIgnoreCase("despegue")) {
             context.emit(movement.getOACIOrigin(), 1L);
         } else {

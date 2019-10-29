@@ -44,15 +44,16 @@ public class Client {
 
         LOGGER.info("Inicio de la lectura del archivo");
         parseInputFiles();
-        LOGGER.info("Fin de lectura del archivo");
-
         Instant now = Instant.now();
         JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
-        final IMap<String, Movement> remoteMovements;
+        final IMap<Integer, Movement> remoteMovements;
         switch (mode) {
             case QUERY_1:
                 remoteMovements = hz.getMap("mv-" + now);
-                movements.forEach(mov -> remoteMovements.put(mov.getKey(), mov));
+
+                for(int i = 0; i < movements.size(); i++)
+                    remoteMovements.put(i, movements.get(i));
+                LOGGER.info("Fin de lectura del archivo");
 
                 LOGGER.info("Inicio del trabajo map/reduce");
                 new Query1(airports, remoteMovements, jobTracker,
@@ -63,7 +64,9 @@ public class Client {
                 break;
             case QUERY_2:
                 remoteMovements = hz.getMap("mv-" + now);
-                movements.forEach(mov -> remoteMovements.put(mov.getKey(), mov));
+                for(int i = 0; i < movements.size(); i++)
+                    remoteMovements.put(i, movements.get(i));
+                LOGGER.info("Fin de lectura del archivo");
 
                 LOGGER.info("Inicio del trabajo map/reduce");
                 new Query2(remoteMovements, jobTracker,
@@ -81,6 +84,7 @@ public class Client {
             case QUERY_6:
                 break;
         }
+        HazelcastClient.shutdownAll();
     }
 
     private static boolean parseArguments() {

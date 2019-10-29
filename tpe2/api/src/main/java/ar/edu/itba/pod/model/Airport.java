@@ -7,7 +7,7 @@ import com.hazelcast.nio.serialization.DataSerializable;
 import java.io.IOException;
 import java.util.Objects;
 
-public class Airport implements DataSerializable {
+public class Airport implements DataSerializable, Comparable<Airport> {
     private String OACIDesignator;
     private String name;
     private String province;
@@ -73,5 +73,10 @@ public class Airport implements DataSerializable {
     @Override
     public int hashCode() {
         return Objects.hash(OACIDesignator, province, name);
+    }
+
+    @Override
+    public int compareTo(Airport o) {
+        return this.getOACIDesignator().compareTo(o.getOACIDesignator());
     }
 }

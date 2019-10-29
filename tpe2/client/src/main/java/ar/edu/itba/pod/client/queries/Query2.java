@@ -21,15 +21,15 @@ import java.util.concurrent.ExecutionException;
 public class Query2 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query2.class);
 
-    private final IMap<String, Movement> movementMap;
+    private final IMap<Integer, Movement> movementMap;
     private final JobTracker jobTracker;
-    private final KeyValueSource<String, Movement> source;
+    private final KeyValueSource<Integer, Movement> source;
     private final String outputPath;
 
     private static final String SEPARATOR = ";";
     private static final String HEADER = "Aerolínea;Porcentaje";
 
-    public Query2(final IMap<String, Movement> movementMap,
+    public Query2(final IMap<Integer, Movement> movementMap,
                   JobTracker jobTracker, final String outputPath) {
         this.movementMap = movementMap;
         this.jobTracker = jobTracker;
@@ -38,7 +38,7 @@ public class Query2 {
     }
 
     public void execute() {
-        Job<String, Movement> job = jobTracker.newJob(source);
+        Job<Integer, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<Map<String, Double>> future = job
                 .mapper(new Query2Mapper())
                 .reducer(new Query2ReducerFactory())
