@@ -1,6 +1,7 @@
 package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.client.queries.Query1;
+import ar.edu.itba.pod.client.queries.Query2;
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.client.HazelcastClient;
@@ -47,9 +48,10 @@ public class Client {
 
         Instant now = Instant.now();
         JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
+        final IMap<String, Movement> remoteMovements;
         switch (mode) {
             case QUERY_1:
-                final IMap<String, Movement> remoteMovements = hz.getMap("mv-" + now);
+                remoteMovements = hz.getMap("mv-" + now);
                 movements.forEach(mov -> remoteMovements.put(mov.getKey(), mov));
 
                 LOGGER.info("Inicio del trabajo map/reduce");
@@ -60,6 +62,15 @@ public class Client {
                 remoteMovements.destroy();
                 break;
             case QUERY_2:
+                remoteMovements = hz.getMap("mv-" + now);
+                movements.forEach(mov -> remoteMovements.put(mov.getKey(), mov));
+
+                LOGGER.info("Inicio del trabajo map/reduce");
+                new Query2(remoteMovements, jobTracker,
+                        concatPath(outputDirectory, "query2.csv")).execute();
+                LOGGER.info("Fin del trabajo map/reduce");
+
+                remoteMovements.destroy();
                 break;
             case QUERY_3:
                 break;

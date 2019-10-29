@@ -1,4 +1,4 @@
-package ar.edu.itba.pod.queries;
+package ar.edu.itba.pod.queries.query1;
 
 import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.mapreduce.Context;
@@ -8,7 +8,7 @@ public class Query1Mapper implements Mapper<String, Movement, String, Long> {
 
     @Override
     public void map(String key, Movement movement, Context<String, Long> context) {
-        if(movement.getMovementType().toLowerCase().equals("despegue")) {
+        if(movement.getMovementType().equalsIgnoreCase("despegue")) {
             context.emit(movement.getOACIOrigin(), 1L);
         } else {
             context.emit(movement.getOACIDestination(), 1L);

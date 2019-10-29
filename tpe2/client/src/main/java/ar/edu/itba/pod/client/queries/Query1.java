@@ -2,8 +2,8 @@ package ar.edu.itba.pod.client.queries;
 
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
-import ar.edu.itba.pod.queries.Query1Mapper;
-import ar.edu.itba.pod.queries.Query1ReducerFactory;
+import ar.edu.itba.pod.queries.query1.Query1Mapper;
+import ar.edu.itba.pod.queries.query1.Query1ReducerFactory;
 import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.*;
@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,12 +50,13 @@ public class Query1 {
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
-    private void writeOutputFile(Map<String, Long> result) { // ORDENAR! TIRA NULL POINTER EXC
+    private void writeOutputFile(Map<String, Long> result) { // ORDENAR!
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
-            bw.write(HEADER);
+            bw.write(HEADER + "\n");
             for(Map.Entry<String, Long> entry : result.entrySet()) {
                 if(!airportMap.containsKey(entry.getKey())) {
                     LOGGER.debug("Saltee aeropuerto con clave {}", entry.getKey());
