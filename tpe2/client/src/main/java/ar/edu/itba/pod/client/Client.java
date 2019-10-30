@@ -29,21 +29,23 @@ public class Client {
     private static Path outputDirectory;
     private static final String AP_INPUT_FILENAME = "aeropuertos.csv";
     private static final String MOV_INPUT_FILENAME = "movimientos.csv";
+    private static Integer n;
     private static List<Airport> airports;
     private static List<Movement> movements;
 
     public static void main(String[] args) {
         LOGGER.info("tpe2 Client Starting ...");
-        if(!parseArguments())
+        if(!parseArguments() || !parseQueryArguments())
             System.exit(1);
+
+        LOGGER.info("Inicio de la lectura del archivo");
+        parseInputFiles();
 
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.getGroupConfig().setName("g5").setPassword("12345678");
         clientConfig.getNetworkConfig().addAddress(serverAddresses);
         HazelcastInstance hz = HazelcastClient.newHazelcastClient(clientConfig);
 
-        LOGGER.info("Inicio de la lectura del archivo");
-        parseInputFiles();
         Instant now = Instant.now();
         JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
         final IMap<Integer, Movement> remoteMovements;
@@ -70,7 +72,7 @@ public class Client {
 
                 LOGGER.info("Inicio del trabajo map/reduce");
                 new Query2(remoteMovements, jobTracker,
-                        concatPath(outputDirectory, "query2.csv")).execute();
+                        concatPath(outputDirectory, "query2.csv"), n).execute();
                 LOGGER.info("Fin del trabajo map/reduce");
 
                 remoteMovements.destroy();
@@ -153,6 +155,34 @@ public class Client {
             LOGGER.error("Error reading {} file at line {} (got {})", e.filename, e.lineNumber, e.line);
             System.exit(1);
         }
+    }
+
+    private static boolean parseQueryArguments() {
+        boolean success = true;
+        if(mode.equals(Mode.QUERY_2)) {
+            success &= parseN();
+        }
+        return success;
+    }
+
+    private static boolean parseN() {
+        String nStr = System.getProperty("n");
+        n = stringToInt(nStr);
+        if(n == null) {
+            LOGGER.error("\'n\' parameter must be present and a number");
+            return false;
+        }
+        return true;
+    }
+
+    private static Integer stringToInt(String str) {
+        Integer i;
+        try {
+            i = Integer.valueOf(str);
+        } catch(NumberFormatException e) {
+            return null;
+        }
+        return i;
     }
 
     private static String concatPath(Path path, String childPath) {

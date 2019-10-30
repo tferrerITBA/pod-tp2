@@ -1,6 +1,5 @@
 package ar.edu.itba.pod.queries.query2;
 
-import ar.edu.itba.pod.queries.query1.Query1ReducerFactory;
 import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 

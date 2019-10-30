@@ -48,7 +48,7 @@ public class Query1 {
                 .submit(new Query1Collator());
 
         try {
-            SortedSet<Map.Entry<String, Long>> result = future.get(); // SINCRONICO
+            SortedSet<Map.Entry<String, Long>> result = future.get();
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

@@ -1,8 +1,6 @@
 package ar.edu.itba.pod.queries.query1;
 
-import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.mapreduce.Collator;
-import sun.misc.SoftCache;
 
 import java.util.Comparator;
 import java.util.Map;
