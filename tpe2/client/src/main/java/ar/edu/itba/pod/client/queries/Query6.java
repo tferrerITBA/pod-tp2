@@ -17,11 +17,10 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
+
+import static java.util.stream.Collectors.toMap;
 
 public class Query6 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query6.class);
@@ -63,17 +62,31 @@ public class Query6 {
     private void writeOutputFile(SortedSet<Map.Entry<OACIcontainer, Long>> entries) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
             bw.write(HEADER + "\n");
+            Map<String, Long> auxMap = new HashMap<>();
+            Map<String, Long> mapToWrite = new HashMap<>();
             for(Map.Entry<OACIcontainer, Long> entry : entries) {
                 if(entry.getValue() < min) continue;
 
                 String originProvince = getProvince(entry.getKey().getFirstOACI());
                 String destinationProvince = getProvince(entry.getKey().getSecondOACI());
-                if(originProvince != null && destinationProvince != null) {
+                if(originProvince != null && destinationProvince != null && !originProvince.equals(destinationProvince)) {
                     String keyToWrite = originProvince.compareTo(destinationProvince) < 0 ?
                             originProvince + SEPARATOR + destinationProvince:
                             destinationProvince + SEPARATOR + originProvince;
-                    bw.write(keyToWrite + SEPARATOR + entry.getValue() + "\n");
+                    if(auxMap.containsKey(keyToWrite))
+                        auxMap.put(keyToWrite,auxMap.get(keyToWrite)+entry.getValue());
+                    else auxMap.put(keyToWrite, entry.getValue());
                 }
+            }
+            mapToWrite = auxMap
+                    .entrySet()
+                    .stream()
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                    .collect(
+                            toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2,
+                                    LinkedHashMap::new));
+            for(Map.Entry<String, Long> entry : mapToWrite.entrySet()) {
+                bw.write(entry.getKey() + SEPARATOR + entry.getValue() + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,10 +95,6 @@ public class Query6 {
     }
 
     public static String getProvince(String OACI) {
-        //LOGGER.info("INSIDE getProvince");
-        //for(Map.Entry<String,Airport> entry : airportMap.entrySet()) {
-        //    LOGGER.info(entry.getKey());
-        //}
         if(airportMap.containsKey(OACI))
             return airportMap.get(OACI).getProvince();
         return null;
