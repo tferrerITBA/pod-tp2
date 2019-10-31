@@ -2,6 +2,7 @@ package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.client.queries.Query1;
 import ar.edu.itba.pod.client.queries.Query2;
+import ar.edu.itba.pod.client.queries.Query4;
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.client.HazelcastClient;
@@ -30,6 +31,7 @@ public class Client {
     private static final String AP_INPUT_FILENAME = "aeropuertos.csv";
     private static final String MOV_INPUT_FILENAME = "movimientos.csv";
     private static Integer n;
+    private static String OACI;
     private static List<Airport> airports;
     private static List<Movement> movements;
 
@@ -80,6 +82,18 @@ public class Client {
             case QUERY_3:
                 break;
             case QUERY_4:
+                remoteMovements = hz.getMap("mv-" + now);
+
+                for(int i = 0; i < movements.size(); i++)
+                    remoteMovements.put(i, movements.get(i));
+                LOGGER.info("Fin de lectura del archivo");
+
+                LOGGER.info("Inicio del trabajo map/reduce");
+                new Query4(remoteMovements, jobTracker,
+                        concatPath(outputDirectory, "query4.csv"), n, OACI).execute();
+                LOGGER.info("Fin del trabajo map/reduce");
+
+                remoteMovements.destroy();
                 break;
             case QUERY_5:
                 break;
@@ -162,7 +176,21 @@ public class Client {
         if(mode.equals(Mode.QUERY_2)) {
             success &= parseN();
         }
+        if(mode.equals(Mode.QUERY_4)) {
+            success &= parseOACI();
+            success &= parseN();
+        }
         return success;
+    }
+
+    private static boolean parseOACI()
+    {
+        OACI = System.getProperty("oaci");
+        if(OACI == null) {
+            LOGGER.error("oaci parameter must be present");
+            return false;
+        }
+        return true;
     }
 
     private static boolean parseN() {
