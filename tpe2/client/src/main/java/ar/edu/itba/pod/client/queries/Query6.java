@@ -64,19 +64,16 @@ public class Query6 {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
             bw.write(HEADER + "\n");
             for(Map.Entry<OACIcontainer, Long> entry : entries) {
-                if(!airportMap.containsKey(entry.getKey())) {
-                    LOGGER.debug("Saltee aeropuerto con clave {}", entry.getKey());
-                    continue;
-                }
-
                 if(entry.getValue() < min) continue;
 
                 String originProvince = getProvince(entry.getKey().getFirstOACI());
                 String destinationProvince = getProvince(entry.getKey().getSecondOACI());
-                String keyToWrite = originProvince.compareTo(destinationProvince) < 0 ?
-                        originProvince + SEPARATOR + destinationProvince:
-                        destinationProvince + SEPARATOR + originProvince;
-                bw.write(keyToWrite + SEPARATOR + entry.getValue() + "\n");
+                if(originProvince != null && destinationProvince != null) {
+                    String keyToWrite = originProvince.compareTo(destinationProvince) < 0 ?
+                            originProvince + SEPARATOR + destinationProvince:
+                            destinationProvince + SEPARATOR + originProvince;
+                    bw.write(keyToWrite + SEPARATOR + entry.getValue() + "\n");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,7 +82,13 @@ public class Query6 {
     }
 
     public static String getProvince(String OACI) {
-        return airportMap.get(OACI).getProvince();
+        //LOGGER.info("INSIDE getProvince");
+        //for(Map.Entry<String,Airport> entry : airportMap.entrySet()) {
+        //    LOGGER.info(entry.getKey());
+        //}
+        if(airportMap.containsKey(OACI))
+            return airportMap.get(OACI).getProvince();
+        return null;
     }
 
 }

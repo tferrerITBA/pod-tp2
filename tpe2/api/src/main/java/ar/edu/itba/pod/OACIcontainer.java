@@ -1,8 +1,9 @@
 package ar.edu.itba.pod;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class OACIcontainer {
+public class OACIcontainer implements Serializable {
     private String firstOACI;
     private String secondOACI;
 
