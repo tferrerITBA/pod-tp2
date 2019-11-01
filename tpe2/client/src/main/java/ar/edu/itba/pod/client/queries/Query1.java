@@ -43,8 +43,7 @@ public class Query1 {
         try {
             Job<Integer, Movement> job = jobTracker.newJob(source);
             ICompletableFuture<SortedSet<Map.Entry<String, Long>>> future = job
-                    .mapper(new Query1Mapper(airportMap.entrySet().stream()
-                            .map(Map.Entry::getKey).collect(Collectors.toSet())))
+                    .mapper(new Query1Mapper(new HashSet<>(airportMap.keySet())))
                     .combiner(new Query1CombinerFactory())
                     .reducer(new Query1ReducerFactory())
                     .submit(new Query1Collator());

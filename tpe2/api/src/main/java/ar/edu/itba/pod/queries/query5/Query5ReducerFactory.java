@@ -5,14 +5,16 @@ import com.hazelcast.mapreduce.ReducerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Query5ReducerFactory implements ReducerFactory<String, Boolean, Double> {
+public class Query5ReducerFactory implements ReducerFactory<String, Long[], Double> {
 
     @Override
-    public Reducer<Boolean, Double> newReducer(String key) {
+    public Reducer<Long[], Double> newReducer(String key) {
         return new QueryReducer();
     }
 
-    private static class QueryReducer extends Reducer<Boolean, Double> {
+    private static class QueryReducer extends Reducer<Long[], Double> {
+        private static final int PRIVATE_MOVEMENTS = 0;
+        private static final int TOTAL_MOVEMENTS = 1;
         private volatile int totalMovements;
         private volatile int privateMovements;
 
@@ -22,11 +24,9 @@ public class Query5ReducerFactory implements ReducerFactory<String, Boolean, Dou
         }
 
         @Override
-        public void reduce(Boolean isPrivateFlight) {
-            totalMovements += 1;
-            if(isPrivateFlight) {
-                privateMovements++;
-            }
+        public void reduce(Long[] flights) {
+            privateMovements += flights[PRIVATE_MOVEMENTS];
+            totalMovements += flights[TOTAL_MOVEMENTS];
         }
 
         @Override

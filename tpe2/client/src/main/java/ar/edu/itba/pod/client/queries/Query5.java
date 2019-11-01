@@ -3,6 +3,7 @@ package ar.edu.itba.pod.client.queries;
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query5.Query5Collator;
+import ar.edu.itba.pod.queries.query5.Query5CombinerFactory;
 import ar.edu.itba.pod.queries.query5.Query5Mapper;
 import ar.edu.itba.pod.queries.query5.Query5ReducerFactory;
 import com.hazelcast.core.ICompletableFuture;
@@ -53,6 +54,7 @@ public class Query5 {
             Job<Integer, Movement> job = jobTracker.newJob(source);
             ICompletableFuture<List<Map.Entry<String, Double>>> future = job
                     .mapper(new Query5Mapper(airports))
+                    .combiner(new Query5CombinerFactory())
                     .reducer(new Query5ReducerFactory())
                     .submit(new Query5Collator(n));
 

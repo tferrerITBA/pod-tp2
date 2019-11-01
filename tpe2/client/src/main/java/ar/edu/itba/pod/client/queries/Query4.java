@@ -2,6 +2,7 @@ package ar.edu.itba.pod.client.queries;
 
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query4.Query4Collator;
+import ar.edu.itba.pod.queries.query4.Query4CombinerFactory;
 import ar.edu.itba.pod.queries.query4.Query4Mapper;
 import ar.edu.itba.pod.queries.query4.Query4ReducerFactory;
 import com.hazelcast.core.ICompletableFuture;
@@ -44,6 +45,7 @@ public class Query4 {
         Job<Integer, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<SortedSet<Map.Entry<String, Long>>> future = job
                 .mapper(new Query4Mapper(OACI))
+                .combiner(new Query4CombinerFactory())
                 .reducer(new Query4ReducerFactory())
                 .submit(new Query4Collator(n));
 
