@@ -61,7 +61,7 @@ public class Query6 {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
             bw.write(HEADER + "\n");
             for(Map.Entry<ProvinceContainer, Long> entry : entries) {
-                if(entry.getValue() < min) continue;
+                if(entry.getValue() < min) return;
 
                 bw.write(entry.getKey().toString() + SEPARATOR + entry.getValue() + "\n");
             }
