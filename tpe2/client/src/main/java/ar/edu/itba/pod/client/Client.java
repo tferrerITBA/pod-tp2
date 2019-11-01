@@ -32,17 +32,16 @@ public class Client {
     private static List<Movement> movements;
 
     public static void main(String[] args) {
-        LOGGER.info("tpe2 Client Starting ...");
         if(!parseArguments() || !parseQueryArguments())
             System.exit(1);
-
-        LOGGER.info("Inicio de la lectura del archivo");
-        parseInputFiles();
 
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.getGroupConfig().setName("g5").setPassword("12345678");
         clientConfig.getNetworkConfig().addAddress(serverAddresses);
         HazelcastInstance hz = HazelcastClient.newHazelcastClient(clientConfig);
+
+        LOGGER.info("Inicio de la lectura del archivo");
+        parseInputFiles();
 
         Instant now = Instant.now();
         JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
