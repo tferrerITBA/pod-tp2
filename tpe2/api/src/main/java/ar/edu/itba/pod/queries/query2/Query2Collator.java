@@ -1,11 +1,13 @@
 package ar.edu.itba.pod.queries.query2;
 
+import ar.edu.itba.pod.FlightPercentageContainer;
 import com.hazelcast.mapreduce.Collator;
 
 import java.util.*;
 
-public class Query2Collator implements Collator<Map.Entry<String, Long>, List<Map.Entry<String, Double>>> {
+public class Query2Collator implements Collator<Map.Entry<String, Long>, List<FlightPercentageContainer>> {
     private final int n;
+    private static final String OTHERS = "Otros";
 
     public Query2Collator(int n) {
         super();
@@ -13,48 +15,48 @@ public class Query2Collator implements Collator<Map.Entry<String, Long>, List<Ma
     }
 
     @Override
-    public List<Map.Entry<String, Double>> collate(Iterable<Map.Entry<String, Long>> iterable) {
+    public List<FlightPercentageContainer> collate(Iterable<Map.Entry<String, Long>> iterable) {
         // Calculate total domestic flights
         Long total = 0L;
         for(Map.Entry<String, Long> entry : iterable) {
             total += entry.getValue();
         }
-
-        // Map quantity to percentage
         final long totalAux = total;
-        Map<String, Double> percentageMap = new HashMap<>();
-        iterable.forEach(entry -> percentageMap.put(
-                entry.getKey(), (entry.getValue() * 100) / (double) totalAux)
-        );
-        percentageMap.putIfAbsent("Otros", 0.0);
 
-        // Get "Others" entry reference
-        Map.Entry<String, Double> othersEntry = null;
-        for(Map.Entry<String, Double> entry : percentageMap.entrySet()) {
-            if(entry.getKey().equals("Otros")) {
-                othersEntry = entry;
-                break;
+        final SortedSet<FlightPercentageContainer> percentages = new TreeSet<>(
+                Comparator
+                        .comparing(FlightPercentageContainer::getPercentage)
+                        .reversed()
+                        .thenComparing(FlightPercentageContainer::getOACI)
+        );
+        final List<FlightPercentageContainer> selectedPercentages = new ArrayList<>();
+
+        // Convert Flight count to percentages and sort them
+        iterable.forEach(entry ->
+            percentages.add(new FlightPercentageContainer(
+                        entry.getKey(),
+                        entry.getValue() * 100 / (double) totalAux))
+        );
+
+        // Select n elements with highest percentage
+        int count = 0;
+        Iterator<FlightPercentageContainer> iterator = percentages.iterator();
+        while(iterator.hasNext() && count < n) {
+            FlightPercentageContainer curr = iterator.next();
+            if(!curr.getOACI().equalsIgnoreCase(OTHERS)) {
+                selectedPercentages.add(curr);
+                count++;
             }
         }
 
-        double sum = percentageMap.remove("Otros");
-
-        // Sort entries by percentage and then by OACI Designator
-        final List<Map.Entry<String, Double>> entries = new ArrayList<>(percentageMap.size());
-        entries.addAll(percentageMap.entrySet());
-        entries.sort(Comparator
-                .comparing(Map.Entry<String, Double>::getValue)
-                .reversed()
-                .thenComparing(Map.Entry::getKey));
-
-        // Remove unwanted entries and add their values to "Others" entry
-        List<Map.Entry<String, Double>> otherEntries = entries.subList(n, entries.size());
-        sum += otherEntries.stream().mapToDouble(Map.Entry::getValue).sum();
-        entries.removeAll(otherEntries);
-        othersEntry.setValue(sum); // othersEntry is never null
-        entries.add(othersEntry);
-
-        return entries;
+        // Add final element comprised of all unused percentages
+        double remainingPercentage = 100.0 - selectedPercentages.stream()
+                .mapToDouble(FlightPercentageContainer::getPercentage)
+                .sum();
+        selectedPercentages.add(new FlightPercentageContainer(
+                OTHERS, remainingPercentage
+        ));
+        return selectedPercentages;
     }
 
 }

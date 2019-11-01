@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.client.queries;
 
+import ar.edu.itba.pod.FlightPercentageContainer;
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query2.Query2Collator;
 import ar.edu.itba.pod.queries.query2.Query2CombinerFactory;
@@ -42,13 +43,13 @@ public class Query2 {
     public void execute() {
         try {
             Job<Integer, Movement> job = jobTracker.newJob(source);
-            ICompletableFuture<List<Map.Entry<String, Double>>> future = job
+            ICompletableFuture<List<FlightPercentageContainer>> future = job
                     .mapper(new Query2Mapper())
                     .combiner(new Query2CombinerFactory())
                     .reducer(new Query2ReducerFactory())
                     .submit(new Query2Collator(n));
 
-            List<Map.Entry<String, Double>> result = future.get();
+            List<FlightPercentageContainer> result = future.get();
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {
             LOGGER.error("Error while executing MapReduce: {}", e.getMessage());
@@ -57,12 +58,12 @@ public class Query2 {
         }
     }
 
-    private void writeOutputFile(List<Map.Entry<String, Double>> result) {
+    private void writeOutputFile(List<FlightPercentageContainer> result) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
             bw.write(HEADER + "\n");
-            for(Map.Entry<String, Double> entry : result) {
-                bw.write(entry.getKey() + SEPARATOR +
-                        String.format("%.2f", entry.getValue()) + "%\n");
+            for(FlightPercentageContainer container : result) {
+                bw.write(container.getOACI() + SEPARATOR +
+                        String.format("%.2f", Math.floor(container.getPercentage() * 100) / 100.0) + "%\n");
             }
         } catch (IOException e) {
             LOGGER.error("Error writing MapReduce results to file {}: {}", outputPath, e.getMessage());
