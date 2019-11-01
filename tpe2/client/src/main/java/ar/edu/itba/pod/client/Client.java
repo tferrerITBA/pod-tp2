@@ -30,6 +30,7 @@ public class Client {
     private static final String MOV_INPUT_FILENAME = "movimientos.csv";
     private static Integer n;
     private static String OACI;
+    private static Integer MIN;
     private static List<Airport> airports;
     private static List<Movement> movements;
 
@@ -119,6 +120,18 @@ public class Client {
                 remoteMovements.destroy();
                 break;
             case QUERY_6:
+                remoteMovements = hz.getMap("mv-" + now);
+
+                for(int i = 0; i < movements.size(); i++)
+                    remoteMovements.put(i, movements.get(i));
+                LOGGER.info("Fin de lectura del archivo");
+
+                LOGGER.info("Inicio del trabajo map/reduce");
+                new Query6(airports, remoteMovements, jobTracker,
+                        concatPath(outputDirectory, "query6.csv"), MIN).execute();
+                LOGGER.info("Fin del trabajo map/reduce");
+
+                remoteMovements.destroy();
                 break;
         }
         HazelcastClient.shutdownAll();
@@ -201,6 +214,9 @@ public class Client {
             success &= parseOACI();
             success &= parseN();
         }
+        if(mode.equals(Mode.QUERY_6)) {
+            success &= parseMin();
+        }
         return success;
     }
 
@@ -219,6 +235,17 @@ public class Client {
         n = stringToInt(nStr);
         if(n == null || n <= 0) {
             LOGGER.error("\'n\' parameter must be present and a positive number");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean parseMin()
+    {
+        String minStr = System.getProperty("min");
+        MIN = stringToInt(minStr);
+        if(MIN == null) {
+            LOGGER.error("min parameter must be present");
             return false;
         }
         return true;
