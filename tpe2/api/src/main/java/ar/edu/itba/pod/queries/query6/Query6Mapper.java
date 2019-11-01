@@ -1,12 +1,10 @@
 package ar.edu.itba.pod.queries.query6;
 
-import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 import ar.edu.itba.pod.*;
 
-import java.io.Serializable;
 import java.util.Map;
 
 public class Query6Mapper implements Mapper<Integer, Movement, ProvinceContainer, Long> {

@@ -3,11 +3,12 @@ package ar.edu.itba.pod;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class ProvinceContainer implements Serializable {
+public class ProvinceContainer implements Serializable, Comparable<ProvinceContainer> {
     private final String firstProvince;
     private final String secondProvince;
 
     public ProvinceContainer(String p1, String p2) {
+        Objects.requireNonNull(p1, p2);
         firstProvince = p1;
         secondProvince = p2;
     }
@@ -40,5 +41,17 @@ public class ProvinceContainer implements Serializable {
         res = 31 * res + (cmp ? firstProvince.hashCode() : secondProvince.hashCode());
         res = 31 * res + (cmp ? secondProvince.hashCode() : firstProvince.hashCode());
         return res;
+    }
+
+    @Override
+    public int compareTo(ProvinceContainer o) {
+        boolean cmpThis = firstProvince.compareTo(secondProvince) >= 0;
+        boolean cmpOther = o.firstProvince.compareTo(o.secondProvince) >= 0;
+        final String thisMinStr = cmpThis? firstProvince : secondProvince;
+        final String otherMinStr = cmpOther? o.firstProvince : o.secondProvince;
+        final String thisMaxStr = cmpThis? secondProvince : firstProvince;
+        final String otherMaxStr = cmpThis ? o.secondProvince : o.firstProvince;
+
+        return thisMinStr.compareTo(otherMinStr) + thisMaxStr.compareTo(otherMaxStr);
     }
 }

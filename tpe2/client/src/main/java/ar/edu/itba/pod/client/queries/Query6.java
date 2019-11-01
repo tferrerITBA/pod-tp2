@@ -12,16 +12,12 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-
-import static java.util.stream.Collectors.toMap;
 
 public class Query6 {
     private final Map<String, String> airportMap;
@@ -49,7 +45,7 @@ public class Query6 {
                 .mapper(new Query6Mapper(airportMap))
                 .combiner(new Query6CombinerFactory())
                 .reducer(new Query6ReducerFactory())
-                .submit(new Query6Collator());
+                .submit(new Query6Collator(min));
 
         try {
             SortedSet<Map.Entry<ProvinceContainer, Long>> result = future.get();
@@ -64,8 +60,6 @@ public class Query6 {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
             bw.write(HEADER + "\n");
             for(Map.Entry<ProvinceContainer, Long> entry : entries) {
-                if(entry.getValue() < min) return;
-
                 bw.write(entry.getKey().toString() + SEPARATOR + entry.getValue() + "\n");
             }
         } catch (IOException e) {

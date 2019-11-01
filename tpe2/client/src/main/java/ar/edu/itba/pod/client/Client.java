@@ -6,7 +6,6 @@ import ar.edu.itba.pod.model.Movement;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.JobTracker;
 import org.slf4j.Logger;
@@ -16,9 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
