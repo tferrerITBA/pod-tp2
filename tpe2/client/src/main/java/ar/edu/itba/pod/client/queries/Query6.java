@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.client.queries;
 
-import ar.edu.itba.pod.OACIcontainer;
+import ar.edu.itba.pod.ProvinceContainer;
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query6.Query6Collator;
@@ -47,13 +47,13 @@ public class Query6 {
 
     public void execute() {
         Job<Integer, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<SortedSet<Map.Entry<OACIcontainer, Long>>> future = job
+        ICompletableFuture<SortedSet<Map.Entry<ProvinceContainer, Long>>> future = job
                 .mapper(new Query6Mapper(airportMap))
                 .reducer(new Query6ReducerFactory())
                 .submit(new Query6Collator());
 
         try {
-            SortedSet<Map.Entry<OACIcontainer, Long>> result = future.get();
+            SortedSet<Map.Entry<ProvinceContainer, Long>> result = future.get();
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -61,10 +61,10 @@ public class Query6 {
         }
     }
 
-    private void writeOutputFile(SortedSet<Map.Entry<OACIcontainer, Long>> entries) {
+    private void writeOutputFile(SortedSet<Map.Entry<ProvinceContainer, Long>> entries) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
             bw.write(HEADER + "\n");
-            for(Map.Entry<OACIcontainer, Long> entry : entries) {
+            for(Map.Entry<ProvinceContainer, Long> entry : entries) {
                 if(entry.getValue() < min) continue;
 
                 bw.write(entry.getKey().toString() + SEPARATOR + entry.getValue() + "\n");

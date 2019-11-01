@@ -3,46 +3,38 @@ package ar.edu.itba.pod;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class OACIcontainer implements Serializable {
-    private String firstOACI;
-    private String secondOACI;
+public class ProvinceContainer implements Serializable {
+    private String firstProvince;
+    private String secondProvince;
 
-    public OACIcontainer(String o1, String o2) {
-        firstOACI = o1;
-        secondOACI = o2;
-    }
-
-    public String getFirstOACI() {
-        return firstOACI;
-    }
-
-    public String getSecondOACI() {
-        return secondOACI;
+    public ProvinceContainer(String p1, String p2) {
+        firstProvince = p1;
+        secondProvince = p2;
     }
 
     @Override
     public String toString() {
-        if(firstOACI.compareTo(secondOACI) < 0)
-            return firstOACI + ";" + secondOACI;
-        return secondOACI + ";" + firstOACI;
+        if(firstProvince.compareTo(secondProvince) < 0)
+            return firstProvince + ";" + secondProvince;
+        return secondProvince + ";" + firstProvince;
     }
 
     @Override
     public boolean equals(Object other) {
         if(this == other)
             return true;
-        if(!(other instanceof OACIcontainer))
+        if(!(other instanceof ProvinceContainer))
             return false;
-        OACIcontainer o = (OACIcontainer) other;
-        return (this.firstOACI.equals(o.firstOACI) &&
-                this.secondOACI.equals(o.secondOACI))||
-                (this.firstOACI.equals(o.secondOACI) &&
-                        this.secondOACI.equals(o.firstOACI));
+        ProvinceContainer o = (ProvinceContainer) other;
+        return (this.firstProvince.equals(o.firstProvince) &&
+                this.secondProvince.equals(o.secondProvince))||
+                (this.firstProvince.equals(o.secondProvince) &&
+                        this.secondProvince.equals(o.firstProvince));
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstOACI) + Objects.hash(secondOACI);
+        return Objects.hash(firstProvince) + Objects.hash(secondProvince);
     }
 }
