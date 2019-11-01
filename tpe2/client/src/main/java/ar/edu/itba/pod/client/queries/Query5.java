@@ -61,6 +61,7 @@ public class Query5 {
             List<Map.Entry<String, Double>> result = future.get();
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error("Error while executing MapReduce: {}", e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }
@@ -73,6 +74,7 @@ public class Query5 {
                 bw.write(entry.getKey() + SEPARATOR + String.format("%.2f", entry.getValue()) + "%\n");
             }
         } catch (IOException e) {
+            LOGGER.error("Error writing MapReduce results to file {}: {}", outputPath, e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }

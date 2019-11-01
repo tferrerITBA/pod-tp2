@@ -75,6 +75,7 @@ public class Query3 {
             SortedSet<Query3Record> result2 = future2.get();
             writeOutputFile(result2);
         } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error("Error while executing MapReduce: {}", e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }
@@ -88,6 +89,7 @@ public class Query3 {
                         + SEPARATOR + record.getAirports()[1] + "\n");
             }
         } catch (IOException e) {
+            LOGGER.error("Error writing MapReduce results to file {}: {}", outputPath, e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }

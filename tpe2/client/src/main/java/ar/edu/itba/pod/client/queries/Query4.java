@@ -21,7 +21,7 @@ import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 
 public class Query4 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Query1.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Query4.class);
 
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;
@@ -53,6 +53,7 @@ public class Query4 {
             SortedSet<Map.Entry<String, Long>> result = future.get();
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error("Error while executing MapReduce: {}", e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }
@@ -65,6 +66,7 @@ public class Query4 {
                 bw.write(entry.getKey() + SEPARATOR + entry.getValue() + "\n");
             }
         } catch (IOException e) {
+            LOGGER.error("Error writing MapReduce results to file {}: {}", outputPath, e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }

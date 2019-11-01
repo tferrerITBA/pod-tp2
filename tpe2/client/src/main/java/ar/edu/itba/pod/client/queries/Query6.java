@@ -12,6 +12,8 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -20,6 +22,8 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class Query6 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Query6.class);
+
     private final Map<String, String> airportMap;
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;
@@ -51,6 +55,7 @@ public class Query6 {
             SortedSet<Map.Entry<ProvinceContainer, Long>> result = future.get();
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {
+            LOGGER.error("Error while executing MapReduce: {}", e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }
@@ -63,6 +68,7 @@ public class Query6 {
                 bw.write(entry.getKey().toString() + SEPARATOR + entry.getValue() + "\n");
             }
         } catch (IOException e) {
+            LOGGER.error("Error writing MapReduce results to file {}: {}", outputPath, e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }
