@@ -3,6 +3,7 @@ package ar.edu.itba.pod.client.queries;
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query1.Query1Collator;
+import ar.edu.itba.pod.queries.query1.Query1CombinerFactory;
 import ar.edu.itba.pod.queries.query1.Query1Mapper;
 import ar.edu.itba.pod.queries.query1.Query1ReducerFactory;
 import com.hazelcast.core.ICompletableFuture;
@@ -14,11 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class Query1 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query1.class);
@@ -41,13 +40,15 @@ public class Query1 {
     }
 
     public void execute() {
-        Job<Integer, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<SortedSet<Map.Entry<String, Long>>> future = job
-                .mapper(new Query1Mapper())
-                .reducer(new Query1ReducerFactory())
-                .submit(new Query1Collator());
-
         try {
+            Job<Integer, Movement> job = jobTracker.newJob(source);
+            ICompletableFuture<SortedSet<Map.Entry<String, Long>>> future = job
+                    .mapper(new Query1Mapper(airportMap.entrySet().stream()
+                            .map(Map.Entry::getKey).collect(Collectors.toSet())))
+                    .combiner(new Query1CombinerFactory())
+                    .reducer(new Query1ReducerFactory())
+                    .submit(new Query1Collator());
+
             SortedSet<Map.Entry<String, Long>> result = future.get();
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {
@@ -60,10 +61,6 @@ public class Query1 {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
             bw.write(HEADER + "\n");
             for(Map.Entry<String, Long> entry : entries) {
-                if(!airportMap.containsKey(entry.getKey())) {
-                    LOGGER.debug("Saltee aeropuerto con clave {}", entry.getKey());
-                    continue;
-                }
                 Airport ap = airportMap.get(entry.getKey());
                 bw.write(entry.getKey() + SEPARATOR + ap.getName() + SEPARATOR +
                         entry.getValue() + "\n");

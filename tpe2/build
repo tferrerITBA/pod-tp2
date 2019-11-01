@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "Starting build..."
+mvn clean package -e
+cd client/target
+echo "Done. Extracting client files..."
+tar xzf tpe2-client-1.0-SNAPSHOT-bin.tar.gz
+echo "Done. Extracting server files..."
+cd ../../server/target
+tar xzf tpe2-server-1.0-SNAPSHOT-bin.tar.gz
+echo "Done."

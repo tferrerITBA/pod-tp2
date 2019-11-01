@@ -1,0 +1,3 @@
+#!/bin/bash
+
+java $* -Dquery=3 -cp 'client/target/tpe2-client-1.0-SNAPSHOT/lib/jars/*' "ar.edu.itba.pod.client.Client"

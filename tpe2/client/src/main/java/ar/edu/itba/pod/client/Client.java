@@ -55,7 +55,7 @@ public class Client {
                 remoteMovements = hz.getMap("mv-" + now);
 
                 for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.put(i, movements.get(i));
+                    remoteMovements.set(i, movements.get(i));
                 LOGGER.info("Fin de lectura del archivo");
 
                 LOGGER.info("Inicio del trabajo map/reduce");
@@ -68,7 +68,7 @@ public class Client {
             case QUERY_2:
                 remoteMovements = hz.getMap("mv-" + now);
                 for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.put(i, movements.get(i));
+                    remoteMovements.set(i, movements.get(i));
                 LOGGER.info("Fin de lectura del archivo");
 
                 LOGGER.info("Inicio del trabajo map/reduce");
@@ -81,12 +81,12 @@ public class Client {
             case QUERY_3:
                 remoteMovements = hz.getMap("mv-" + now);
                 for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.put(i, movements.get(i));
+                    remoteMovements.set(i, movements.get(i));
                 LOGGER.info("Fin de lectura del archivo");
                 final IMap<String, Long> remoteMovementsCount = hz.getMap("mvc-" + now);
 
                 LOGGER.info("Inicio del trabajo map/reduce");
-                new Query3(remoteMovements, remoteMovementsCount, jobTracker,
+                new Query3(airports, remoteMovements, remoteMovementsCount, jobTracker,
                         concatPath(outputDirectory, "query3.csv")).execute();
                 LOGGER.info("Fin del trabajo map/reduce");
 
@@ -96,7 +96,7 @@ public class Client {
                 remoteMovements = hz.getMap("mv-" + now);
 
                 for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.put(i, movements.get(i));
+                    remoteMovements.set(i, movements.get(i));
                 LOGGER.info("Fin de lectura del archivo");
 
                 LOGGER.info("Inicio del trabajo map/reduce");
@@ -107,6 +107,17 @@ public class Client {
                 remoteMovements.destroy();
                 break;
             case QUERY_5:
+                remoteMovements = hz.getMap("mv-" + now);
+                for(int i = 0; i < movements.size(); i++)
+                    remoteMovements.set(i, movements.get(i));
+                LOGGER.info("Fin de lectura del archivo");
+
+                LOGGER.info("Inicio del trabajo map/reduce");
+                new Query5(airports, remoteMovements, jobTracker,
+                        concatPath(outputDirectory, "query5.csv"), n).execute();
+                LOGGER.info("Fin del trabajo map/reduce");
+
+                remoteMovements.destroy();
                 break;
             case QUERY_6:
                 remoteMovements = hz.getMap("mv-" + now);
@@ -196,7 +207,7 @@ public class Client {
 
     private static boolean parseQueryArguments() {
         boolean success = true;
-        if(mode.equals(Mode.QUERY_2)) {
+        if(mode.equals(Mode.QUERY_2) || mode.equals(Mode.QUERY_5)) {
             success &= parseN();
         }
         if(mode.equals(Mode.QUERY_4)) {
@@ -222,8 +233,8 @@ public class Client {
     private static boolean parseN() {
         String nStr = System.getProperty("n");
         n = stringToInt(nStr);
-        if(n == null) {
-            LOGGER.error("\'n\' parameter must be present and a number");
+        if(n == null || n <= 0) {
+            LOGGER.error("\'n\' parameter must be present and a positive number");
             return false;
         }
         return true;
