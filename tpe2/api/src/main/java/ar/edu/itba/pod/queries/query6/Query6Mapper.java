@@ -9,21 +9,23 @@ import ar.edu.itba.pod.*;
 import java.io.Serializable;
 import java.util.Map;
 
-public class Query6Mapper implements Serializable, Mapper<Integer, Movement, ProvinceContainer, Long> {
-    private Map<String, Airport> airports;
+public class Query6Mapper implements Mapper<Integer, Movement, ProvinceContainer, Long> {
+    private final Map<String, String> airports;
 
-    public Query6Mapper(Map<String, Airport> airports) {
+    public Query6Mapper(Map<String, String> airports) {
         this.airports = airports;
     }
+
     @Override
     public void map(Integer key, Movement movement, Context<ProvinceContainer, Long> context) {
-        String originOACI = movement.getOACIOrigin(), destinationOACI = movement.getOACIDestination();
+        String originOACI = movement.getOACIOrigin();
+        String destinationOACI = movement.getOACIDestination();
         if(airports.containsKey(originOACI) && airports.containsKey(destinationOACI)) {
-            String originProvince = airports.get(originOACI).getProvince();
-            String destinationProvince = airports.get(destinationOACI).getProvince();
+            String originProvince = airports.get(originOACI);
+            String destinationProvince = airports.get(destinationOACI);
 
             if(!originProvince.equals(destinationProvince))
-                context.emit(new ProvinceContainer(originProvince,destinationProvince), 1L);
+                context.emit(new ProvinceContainer(originProvince, destinationProvince), 1L);
         }
     }
 }

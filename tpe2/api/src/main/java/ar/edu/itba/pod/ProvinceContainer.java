@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class ProvinceContainer implements Serializable {
-    private String firstProvince;
-    private String secondProvince;
+    private final String firstProvince;
+    private final String secondProvince;
 
     public ProvinceContainer(String p1, String p2) {
         firstProvince = p1;
@@ -27,7 +27,7 @@ public class ProvinceContainer implements Serializable {
             return false;
         ProvinceContainer o = (ProvinceContainer) other;
         return (this.firstProvince.equals(o.firstProvince) &&
-                this.secondProvince.equals(o.secondProvince))||
+                this.secondProvince.equals(o.secondProvince)) ||
                 (this.firstProvince.equals(o.secondProvince) &&
                         this.secondProvince.equals(o.firstProvince));
 
@@ -35,6 +35,10 @@ public class ProvinceContainer implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstProvince) + Objects.hash(secondProvince);
+        int res = 7;
+        boolean cmp = firstProvince.compareTo(secondProvince) >= 0;
+        res = 31 * res + (cmp ? firstProvince.hashCode() : secondProvince.hashCode());
+        res = 31 * res + (cmp ? secondProvince.hashCode() : firstProvince.hashCode());
+        return res;
     }
 }

@@ -4,6 +4,7 @@ import ar.edu.itba.pod.ProvinceContainer;
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query6.Query6Collator;
+import ar.edu.itba.pod.queries.query6.Query6CombinerFactory;
 import ar.edu.itba.pod.queries.query6.Query6Mapper;
 import ar.edu.itba.pod.queries.query6.Query6ReducerFactory;
 import com.hazelcast.core.ICompletableFuture;
@@ -23,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 import static java.util.stream.Collectors.toMap;
 
 public class Query6 {
-    private static final Map<String, Airport> airportMap = new HashMap<>();
+    private final Map<String, String> airportMap;
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;
     private final String outputPath;
@@ -34,7 +35,8 @@ public class Query6 {
 
     public Query6(final List<Airport> airports, final IMap<Integer, Movement> movementMap,
                   JobTracker jobTracker, final String outputPath, Integer min) {
-        airports.forEach(ap -> this.airportMap.put(ap.getOACIDesignator(), ap));
+        airportMap = new HashMap<>();
+        airports.forEach(ap -> airportMap.put(ap.getOACIDesignator(), ap.getProvince()));
         this.jobTracker = jobTracker;
         this.source = KeyValueSource.fromMap(movementMap);
         this.outputPath = outputPath;
@@ -45,6 +47,7 @@ public class Query6 {
         Job<Integer, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<SortedSet<Map.Entry<ProvinceContainer, Long>>> future = job
                 .mapper(new Query6Mapper(airportMap))
+                .combiner(new Query6CombinerFactory())
                 .reducer(new Query6ReducerFactory())
                 .submit(new Query6Collator());
 
