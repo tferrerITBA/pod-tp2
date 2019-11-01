@@ -14,11 +14,13 @@ public class Query2Collator implements Collator<Map.Entry<String, Long>, List<Ma
 
     @Override
     public List<Map.Entry<String, Double>> collate(Iterable<Map.Entry<String, Long>> iterable) {
+        // Calculate total domestic flights
         Long total = 0L;
         for(Map.Entry<String, Long> entry : iterable) {
             total += entry.getValue();
         }
 
+        // Map quantity to percentage
         final long totalAux = total;
         Map<String, Double> percentageMap = new HashMap<>();
         iterable.forEach(entry -> percentageMap.put(
@@ -26,6 +28,7 @@ public class Query2Collator implements Collator<Map.Entry<String, Long>, List<Ma
         );
         percentageMap.putIfAbsent("Otros", 0.0);
 
+        // Get "Others" entry reference
         Map.Entry<String, Double> othersEntry = null;
         for(Map.Entry<String, Double> entry : percentageMap.entrySet()) {
             if(entry.getKey().equals("Otros")) {
@@ -36,14 +39,16 @@ public class Query2Collator implements Collator<Map.Entry<String, Long>, List<Ma
 
         double sum = percentageMap.remove("Otros");
 
+        // Sort entries by percentage and then by OACI Designator
         final List<Map.Entry<String, Double>> entries = new ArrayList<>(percentageMap.size());
         entries.addAll(percentageMap.entrySet());
         entries.sort(Comparator
                 .comparing(Map.Entry<String, Double>::getValue)
                 .reversed()
                 .thenComparing(Map.Entry::getKey));
-        List<Map.Entry<String, Double>> otherEntries = entries.subList(n, entries.size());
 
+        // Remove unwanted entries and add their values to "Others" entry
+        List<Map.Entry<String, Double>> otherEntries = entries.subList(n, entries.size());
         sum += otherEntries.stream().mapToDouble(Map.Entry::getValue).sum();
         entries.removeAll(otherEntries);
         othersEntry.setValue(sum); // othersEntry is never null

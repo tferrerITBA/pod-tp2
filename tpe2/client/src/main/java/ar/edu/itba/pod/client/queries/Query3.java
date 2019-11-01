@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.client.queries;
 
+import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query1.Query1Mapper;
 import ar.edu.itba.pod.queries.query1.Query1ReducerFactory;
@@ -18,13 +19,17 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class Query3 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query3.class);
 
+    private final Set<String> airports;
     private final IMap<String, Long> remoteMovementsCount;
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;
@@ -33,9 +38,15 @@ public class Query3 {
     private static final String SEPARATOR = ";";
     private static final String HEADER = "Grupo;Aeropuerto A;Aeropuerto B";
 
-    public Query3(final IMap<Integer, Movement> movementMap,
+    public Query3(final List<Airport> airports,
+                  final IMap<Integer, Movement> movementMap,
                   final IMap<String, Long> remoteMovementsCount,
                   JobTracker jobTracker, final String outputPath) {
+        this.airports = airports
+                .stream()
+                .map(Airport::getOACIDesignator)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
         this.remoteMovementsCount = remoteMovementsCount;
         this.jobTracker = jobTracker;
         this.source = KeyValueSource.fromMap(movementMap);
@@ -43,15 +54,15 @@ public class Query3 {
     }
 
     public void execute() {
-        Job<Integer, Movement> job1 = jobTracker.newJob(source);
-        ICompletableFuture<Map<String, Long>> future1 = job1
-                .mapper(new Query1Mapper())
-                .reducer(new Query1ReducerFactory())
-                .submit();
-
         try {
+            Job<Integer, Movement> job1 = jobTracker.newJob(source);
+            ICompletableFuture<Map<String, Long>> future1 = job1
+                    .mapper(new Query1Mapper(airports))
+                    .reducer(new Query1ReducerFactory())
+                    .submit();
+
             Map<String, Long> result = future1.get();
-            result.forEach(remoteMovementsCount::put); // se puede mejorar?
+            result.forEach(remoteMovementsCount::set);
 
             Job<String, Long> job2 = jobTracker.newJob(
                     KeyValueSource.fromMap(remoteMovementsCount)
