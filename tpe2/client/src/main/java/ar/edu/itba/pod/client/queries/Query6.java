@@ -23,10 +23,7 @@ import java.util.concurrent.ExecutionException;
 import static java.util.stream.Collectors.toMap;
 
 public class Query6 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Query6.class);
-
     private static final Map<String, Airport> airportMap = new HashMap<>();
-    private final List<Airport> airports;
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;
     private final String outputPath;
@@ -37,7 +34,6 @@ public class Query6 {
 
     public Query6(final List<Airport> airports, final IMap<Integer, Movement> movementMap,
                   JobTracker jobTracker, final String outputPath, Integer min) {
-        this.airports = airports;
         airports.forEach(ap -> this.airportMap.put(ap.getOACIDesignator(), ap));
         this.jobTracker = jobTracker;
         this.source = KeyValueSource.fromMap(movementMap);
