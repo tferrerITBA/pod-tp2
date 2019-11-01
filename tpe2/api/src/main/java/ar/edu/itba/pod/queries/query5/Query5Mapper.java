@@ -17,6 +17,7 @@ public class Query5Mapper implements Mapper<Integer, Movement, String, Boolean> 
 
     @Override
     public void map(Integer key, Movement movement, Context<String, Boolean> context) {
+        // Emit OACI designator and a boolean describing whether or not a flight is private
         if(airports.contains(movement.getOACIOrigin())) {
             context.emit(movement.getOACIOrigin(), isPrivateFlight(movement));
         }

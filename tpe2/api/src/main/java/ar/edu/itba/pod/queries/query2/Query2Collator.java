@@ -1,6 +1,5 @@
 package ar.edu.itba.pod.queries.query2;
 
-import ar.edu.itba.pod.FlightPercentageContainer;
 import com.hazelcast.mapreduce.Collator;
 
 import java.util.*;

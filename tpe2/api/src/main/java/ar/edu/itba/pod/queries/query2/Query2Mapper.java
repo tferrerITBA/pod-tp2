@@ -12,6 +12,8 @@ public class Query2Mapper implements Mapper<Integer, Movement, String, Long> {
 
     @Override
     public void map(Integer key, Movement movement, Context<String, Long> context) {
+        // For every domestic flight, emit airline name ("Others" if none),
+        // and '1' accounting for one movement entry
         if(movement.getFlightClassification().equalsIgnoreCase(DOMESTIC_FLIGHT)) {
             if(movement.getAirlineName() == null || movement.getAirlineName().isEmpty()
                     || movement.getAirlineName().equalsIgnoreCase(N_A)) {

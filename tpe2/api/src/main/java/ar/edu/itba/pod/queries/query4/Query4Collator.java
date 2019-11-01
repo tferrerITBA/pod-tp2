@@ -13,7 +13,7 @@ public class Query4Collator implements Collator<Map.Entry<String, Long>, SortedS
 
     @Override
     public SortedSet<Map.Entry<String, Long>> collate(Iterable<Map.Entry<String, Long>> iterable) {
-
+        // Sort entries by movement quantity, then by OACI designator
         Comparator<Map.Entry<String, Long>> queryComparator = Comparator
                 .comparing(Map.Entry<String, Long>::getValue)
                 .reversed()
@@ -22,6 +22,7 @@ public class Query4Collator implements Collator<Map.Entry<String, Long>, SortedS
         final SortedSet<Map.Entry<String, Long>> sortedEntries = new TreeSet<>(queryComparator);
         iterable.forEach(sortedEntries::add);
 
+        // Keep only first N entries
         SortedSet<Map.Entry<String, Long>> firstNEntries = new TreeSet<>(queryComparator);
 
         Iterator<Map.Entry<String, Long>> sortedEntriesIterator = sortedEntries.iterator();

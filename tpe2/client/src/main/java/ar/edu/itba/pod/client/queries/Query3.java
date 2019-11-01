@@ -26,10 +26,11 @@ import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class Query3 {
+// Airport pairs with the same amount of thousand movements
+public class Query3 implements Query {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query3.class);
 
-    private final Set<String> airports;
+    private final Set<String> airports; // Non-empty OACIs
     private final IMap<String, Long> remoteMovementsCount;
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;

@@ -23,10 +23,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class Query5 {
+// Airports with least amount of private flights
+public class Query5 implements Query {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query5.class);
 
-    private final Set<String> airports;
+    private final Set<String> airports; // Non-empty OACIs
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;
     private final String outputPath;

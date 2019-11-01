@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.client.queries;
 
-import ar.edu.itba.pod.FlightPercentageContainer;
+import ar.edu.itba.pod.queries.query2.FlightPercentageContainer;
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query2.Query2Collator;
 import ar.edu.itba.pod.queries.query2.Query2CombinerFactory;
@@ -18,10 +18,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class Query2 {
+// Top airlines by amount of domestic flights
+public class Query2 implements Query {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query2.class);
 
     private final JobTracker jobTracker;
