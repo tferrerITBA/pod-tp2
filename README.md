@@ -4,25 +4,28 @@
 
 ```bash
 cd tpe2
-mvn clean package -e
+chmod u+x build
+./build
 ```
 
 ## Run Server
 
 ```bash
-cd server/target
-tar xzf tpe2-server-1.0-SNAPSHOT-bin.tar.gz
-cd tpe2-server-1.0-SNAPSHOT-bin/tpe2-server-1.0-SNAPSHOT
-java -cp 'lib/jars/*' "ar.edu.itba.pod.server.Server" $*
+pwd # => $PROJECT_ROOT/tpe2
+chmod u+x run-server
+./run-server # starts Hazelcast Management Center (if docker container is installed) and server
 ```
 
-## Run Client
+## Run Queries
+
 ```bash
-cd client/target
-tar xzf tpe2-client-1.0-SNAPSHOT-bin.tar.gz
-cd tpe2-client-1.0-SNAPSHOT-bin/tpe2-client-1.0-SNAPSHOT
-java -Daddresses='127.0.0.1' -DinPath=/home/mlund -DoutPath=. -cp 'lib/jars/*' "ar.edu.itba.pod.client.Client"
+pwd # => $PROJECT_ROOT/tpe2
+chmod u+x query*
+# query 1 writes output to $outPath/query1.csv and expects to find
+# aeropuertos.csv and movimientos.csv at $inPath
+./query1 -Daddresses='127.0.0.1' -DinPath=/home/mlund -DoutPath=.
 ```
+*Note*: there is a script for every query. Some may require additional properties to be set.
 
 ## Installing Hazelcast Management Center v3.7.8 (Docker Image)
 
@@ -30,7 +33,7 @@ java -Daddresses='127.0.0.1' -DinPath=/home/mlund -DoutPath=. -cp 'lib/jars/*' "
 sudo docker pull hazelcast/management-center@sha256:b1cdb8b6854ced1d272783560f58eb3df0a82724e298c6a27aa4c8dec627ed10
 ```
 
-To run:
+To run manually:
 
 ```bash
 sudo docker run -p 127.0.0.1:8080:8080/tcp e28e49d694bc
