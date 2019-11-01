@@ -21,6 +21,13 @@ public class OACIcontainer implements Serializable {
     }
 
     @Override
+    public String toString() {
+        if(firstOACI.compareTo(secondOACI) < 0)
+            return firstOACI + ";" + secondOACI;
+        return secondOACI + ";" + firstOACI;
+    }
+
+    @Override
     public boolean equals(Object other) {
         if(this == other)
             return true;

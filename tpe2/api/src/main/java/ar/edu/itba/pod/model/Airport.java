@@ -5,9 +5,10 @@ import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Airport implements DataSerializable, Comparable<Airport> {
+public class Airport implements DataSerializable, Serializable, Comparable<Airport> {
     private String OACIDesignator;
     private String name;
     private String province;
