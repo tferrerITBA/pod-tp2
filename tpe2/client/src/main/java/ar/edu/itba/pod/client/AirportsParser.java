@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AirportsParser implements CsvParser<Airport> {
+public class AirportsParser {
+    private static final String SEPARATOR = ";";
     private static final int OACI_INDEX = 1;
     private static final int NAME_INDEX = 4;
     private static final int PROVINCE_INDEX = 21;
 
-    @Override
     public List<Airport> parseCsv(final String path) throws IOException, InvalidCsvException {
         List<Airport> airports = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(path))) {

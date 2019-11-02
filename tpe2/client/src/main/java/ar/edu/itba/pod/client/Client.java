@@ -29,7 +29,6 @@ public class Client {
     private static String OACI;
     private static Integer min;
     private static List<Airport> airports;
-    private static List<Movement> movements;
 
     public static void main(String[] args) {
         if(!parseArguments() || !parseQueryArguments())
@@ -41,16 +40,12 @@ public class Client {
         HazelcastInstance hz = HazelcastClient.newHazelcastClient(clientConfig);
 
         LOGGER.info("Inicio de la lectura del archivo");
-        parseInputFiles();
-
         Instant now = Instant.now();
-        JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
         final IMap<Integer, Movement> remoteMovements = hz.getMap("mv-" + now);
-        for(int i = 0; i < movements.size(); i++)
-            remoteMovements.set(i, movements.get(i));
-        LOGGER.info("Fin de lectura del archivo");
+        parseInputFiles(remoteMovements);
 
-        movements.clear(); // only remoteMovements used from this point on
+        JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
+        LOGGER.info("Fin de lectura del archivo");
 
         LOGGER.info("Inicio del trabajo map/reduce");
         switch (mode) {
@@ -137,10 +132,10 @@ public class Client {
         return true;
     }
 
-    private static void parseInputFiles() {
+    private static void parseInputFiles(IMap<Integer, Movement> remoteMovements) {
         try {
             airports = new AirportsParser().parseCsv(concatPath(inputDirectory, AP_INPUT_FILENAME));
-            movements = new MovementsParser().parseCsv(concatPath(inputDirectory, MOV_INPUT_FILENAME));
+            new MovementsParser(remoteMovements).parseCsv(concatPath(inputDirectory, MOV_INPUT_FILENAME));
         } catch(IOException e) {
             LOGGER.error("Error reading input file.");
             e.printStackTrace();
