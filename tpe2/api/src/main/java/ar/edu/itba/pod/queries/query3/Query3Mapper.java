@@ -8,6 +8,7 @@ public class Query3Mapper implements Mapper<String, Long, Long, String> {
 
     @Override
     public void map(String key, Long movementCount, Context<Long, String> context) {
+        // Emit thousand movements and OACI designator
         long thousandMovements = (movementCount / 1000) * 1000;
         if(thousandMovements != ZERO) {
             context.emit(thousandMovements, key);

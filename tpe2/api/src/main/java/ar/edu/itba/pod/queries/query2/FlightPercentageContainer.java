@@ -1,4 +1,4 @@
-package ar.edu.itba.pod;
+package ar.edu.itba.pod.queries.query2;
 
 import java.util.Objects;
 

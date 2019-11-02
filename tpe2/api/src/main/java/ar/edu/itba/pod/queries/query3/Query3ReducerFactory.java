@@ -13,6 +13,7 @@ public class Query3ReducerFactory implements ReducerFactory<Long, String, List<S
     }
 
     private static class QueryReducer extends Reducer<String, List<String>> {
+        // List containing OACI designators which have the same amount of thousand movements
         private volatile List<String> apList;
 
         @Override

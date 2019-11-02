@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 
-public class Query4 {
+// Top destination airports for source airport
+public class Query4 implements Query {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query4.class);
 
     private final JobTracker jobTracker;
@@ -42,14 +43,14 @@ public class Query4 {
     }
 
     public void execute() {
-        Job<Integer, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<SortedSet<Map.Entry<String, Long>>> future = job
-                .mapper(new Query4Mapper(OACI))
-                .combiner(new Query4CombinerFactory())
-                .reducer(new Query4ReducerFactory())
-                .submit(new Query4Collator(n));
-
         try {
+            Job<Integer, Movement> job = jobTracker.newJob(source);
+            ICompletableFuture<SortedSet<Map.Entry<String, Long>>> future = job
+                    .mapper(new Query4Mapper(OACI))
+                    .combiner(new Query4CombinerFactory())
+                    .reducer(new Query4ReducerFactory())
+                    .submit(new Query4Collator(n));
+
             SortedSet<Map.Entry<String, Long>> result = future.get();
             writeOutputFile(result);
         } catch (InterruptedException | ExecutionException e) {

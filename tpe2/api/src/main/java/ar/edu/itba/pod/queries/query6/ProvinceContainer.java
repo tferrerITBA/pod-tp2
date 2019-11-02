@@ -1,4 +1,4 @@
-package ar.edu.itba.pod;
+package ar.edu.itba.pod.queries.query6;
 
 import java.io.Serializable;
 import java.util.Objects;

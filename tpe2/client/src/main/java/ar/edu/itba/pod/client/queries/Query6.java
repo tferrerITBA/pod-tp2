@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.client.queries;
 
-import ar.edu.itba.pod.ProvinceContainer;
+import ar.edu.itba.pod.queries.query6.ProvinceContainer;
 import ar.edu.itba.pod.model.Airport;
 import ar.edu.itba.pod.model.Movement;
 import ar.edu.itba.pod.queries.query6.Query6Collator;
@@ -21,10 +21,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-public class Query6 {
+// Province pairs with shared movement quantity
+public class Query6 implements Query {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query6.class);
 
-    private final Map<String, String> airportMap;
+    private final Map<String, String> airportMap; // OACI -> Province
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;
     private final String outputPath;

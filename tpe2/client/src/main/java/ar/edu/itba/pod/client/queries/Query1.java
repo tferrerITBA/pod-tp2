@@ -19,10 +19,11 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class Query1 {
+// Movement quantity by airport
+public class Query1 implements Query {
     private static final Logger LOGGER = LoggerFactory.getLogger(Query1.class);
 
-    private final Map<String, Airport> airportMap;
+    private final Map<String, Airport> airportMap; // OACI -> Airport
     private final JobTracker jobTracker;
     private final KeyValueSource<Integer, Movement> source;
     private final String outputPath;

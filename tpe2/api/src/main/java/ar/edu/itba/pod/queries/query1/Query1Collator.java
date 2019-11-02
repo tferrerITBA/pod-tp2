@@ -11,6 +11,7 @@ public class Query1Collator implements Collator<Map.Entry<String, Long>, SortedS
 
     @Override
     public SortedSet<Map.Entry<String, Long>> collate(Iterable<Map.Entry<String, Long>> iterable) {
+        // Sort entries by number of movements, then by OACI designator
         final SortedSet<Map.Entry<String, Long>> sortedEntries = new TreeSet<>(
                 Comparator
                         .comparing(Map.Entry<String, Long>::getValue)

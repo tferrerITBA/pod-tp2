@@ -6,6 +6,7 @@ import com.hazelcast.mapreduce.Mapper;
 
 public class Query4Mapper implements Mapper<Integer, Movement, String, Long> {
     private final String OACIParam;
+    private static final Long ONE = 1L;
 
     public Query4Mapper(final String OACIParam) {
         this.OACIParam = OACIParam;
@@ -13,8 +14,10 @@ public class Query4Mapper implements Mapper<Integer, Movement, String, Long> {
 
     @Override
     public void map(Integer integer, Movement movement, Context<String, Long> context) {
+        // If origin is correct, emit OACI destination, and '1' accounting for
+        // one movement entry
         if(movement.getOACIOrigin().equals(OACIParam)) {
-            context.emit(movement.getOACIDestination(), 1L);
+            context.emit(movement.getOACIDestination(), ONE);
         }
     }
 }

@@ -18,6 +18,7 @@ public class Query1Mapper implements Mapper<Integer, Movement, String, Long> {
 
     @Override
     public void map(Integer key, Movement movement, Context<String, Long> context) {
+        // Emit appropiate OACI designator and '1' accounting for one movement entry
         if(isTakeoff(movement)) {
             if(airports.contains(movement.getOACIOrigin()))
                 context.emit(movement.getOACIOrigin(), ONE);
