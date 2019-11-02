@@ -27,7 +27,7 @@ public class Client {
     private static final String MOV_INPUT_FILENAME = "movimientos.csv";
     private static Integer n;
     private static String OACI;
-    private static Integer MIN;
+    private static Integer min;
     private static List<Airport> airports;
     private static List<Movement> movements;
 
@@ -45,91 +45,45 @@ public class Client {
 
         Instant now = Instant.now();
         JobTracker jobTracker = hz.getJobTracker(mode.toString() + "-" + now);
-        final IMap<Integer, Movement> remoteMovements;
+        final IMap<Integer, Movement> remoteMovements = hz.getMap("mv-" + now);
+        for(int i = 0; i < movements.size(); i++)
+            remoteMovements.set(i, movements.get(i));
+        LOGGER.info("Fin de lectura del archivo");
+
+        movements.clear(); // only remoteMovements used from this point on
+
+        LOGGER.info("Inicio del trabajo map/reduce");
         switch (mode) {
             case QUERY_1:
-                remoteMovements = hz.getMap("mv-" + now);
-
-                for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.set(i, movements.get(i));
-                LOGGER.info("Fin de lectura del archivo");
-
-                LOGGER.info("Inicio del trabajo map/reduce");
                 new Query1(airports, remoteMovements, jobTracker,
                         concatPath(outputDirectory, "query1.csv")).execute();
-                LOGGER.info("Fin del trabajo map/reduce");
-
-                remoteMovements.destroy();
                 break;
             case QUERY_2:
-                remoteMovements = hz.getMap("mv-" + now);
-                for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.set(i, movements.get(i));
-                LOGGER.info("Fin de lectura del archivo");
-
-                LOGGER.info("Inicio del trabajo map/reduce");
                 new Query2(remoteMovements, jobTracker,
                         concatPath(outputDirectory, "query2.csv"), n).execute();
-                LOGGER.info("Fin del trabajo map/reduce");
-
-                remoteMovements.destroy();
                 break;
             case QUERY_3:
-                remoteMovements = hz.getMap("mv-" + now);
-                for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.set(i, movements.get(i));
-                LOGGER.info("Fin de lectura del archivo");
                 final IMap<String, Long> remoteMovementsCount = hz.getMap("mvc-" + now);
-
-                LOGGER.info("Inicio del trabajo map/reduce");
                 new Query3(airports, remoteMovements, remoteMovementsCount, jobTracker,
                         concatPath(outputDirectory, "query3.csv")).execute();
-                LOGGER.info("Fin del trabajo map/reduce");
-
-                remoteMovements.destroy();
+                remoteMovementsCount.destroy();
                 break;
             case QUERY_4:
-                remoteMovements = hz.getMap("mv-" + now);
-
-                for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.set(i, movements.get(i));
-                LOGGER.info("Fin de lectura del archivo");
-
-                LOGGER.info("Inicio del trabajo map/reduce");
                 new Query4(remoteMovements, jobTracker,
                         concatPath(outputDirectory, "query4.csv"), n, OACI).execute();
-                LOGGER.info("Fin del trabajo map/reduce");
-
-                remoteMovements.destroy();
                 break;
             case QUERY_5:
-                remoteMovements = hz.getMap("mv-" + now);
-                for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.set(i, movements.get(i));
-                LOGGER.info("Fin de lectura del archivo");
-
-                LOGGER.info("Inicio del trabajo map/reduce");
                 new Query5(airports, remoteMovements, jobTracker,
                         concatPath(outputDirectory, "query5.csv"), n).execute();
-                LOGGER.info("Fin del trabajo map/reduce");
-
-                remoteMovements.destroy();
                 break;
             case QUERY_6:
-                remoteMovements = hz.getMap("mv-" + now);
-
-                for(int i = 0; i < movements.size(); i++)
-                    remoteMovements.put(i, movements.get(i));
-                LOGGER.info("Fin de lectura del archivo");
-
-                LOGGER.info("Inicio del trabajo map/reduce");
                 new Query6(airports, remoteMovements, jobTracker,
-                        concatPath(outputDirectory, "query6.csv"), MIN).execute();
-                LOGGER.info("Fin del trabajo map/reduce");
-
-                remoteMovements.destroy();
+                        concatPath(outputDirectory, "query6.csv"), min).execute();
                 break;
         }
+        LOGGER.info("Fin del trabajo map/reduce");
+
+        remoteMovements.destroy();
         HazelcastClient.shutdownAll();
     }
 
@@ -144,14 +98,10 @@ public class Client {
 
     private static boolean parseMode() {
         String modeStr = System.getProperty("query");
-        if(modeStr == null) {
-            LOGGER.error("Mode must be present.");
-            return false;
-        }
         try {
             mode = Mode.valueOf("QUERY_" + modeStr);
         } catch (Exception e) {
-            LOGGER.error("Mode must be a number between 1 and 6.");
+            LOGGER.error("Mode must be present and a number between 1 and 6.");
             return false;
         }
         return true;
@@ -216,8 +166,7 @@ public class Client {
         return success;
     }
 
-    private static boolean parseOACI()
-    {
+    private static boolean parseOACI() {
         OACI = System.getProperty("oaci");
         if(OACI == null) {
             LOGGER.error("oaci parameter must be present");
@@ -236,12 +185,11 @@ public class Client {
         return true;
     }
 
-    private static boolean parseMin()
-    {
+    private static boolean parseMin() {
         String minStr = System.getProperty("min");
-        MIN = stringToInt(minStr);
-        if(MIN == null) {
-            LOGGER.error("min parameter must be present");
+        min = stringToInt(minStr);
+        if(min == null || min <= 0) {
+            LOGGER.error("min parameter must be present and a positive number");
             return false;
         }
         return true;
