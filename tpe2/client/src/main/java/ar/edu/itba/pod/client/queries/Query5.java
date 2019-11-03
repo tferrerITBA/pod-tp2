@@ -18,6 +18,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -72,7 +73,7 @@ public class Query5 implements Query {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath))) {
             bw.write(HEADER + "\n");
             for(Map.Entry<String, Double> entry : result) {
-                bw.write(entry.getKey() + SEPARATOR + String.format("%.2f", entry.getValue()) + "%\n");
+                bw.write(entry.getKey() + SEPARATOR + String.format(Locale.US, "%.2f", entry.getValue()) + "%\n");
             }
         } catch (IOException e) {
             LOGGER.error("Error writing MapReduce results to file {}: {}", outputPath, e.getMessage());

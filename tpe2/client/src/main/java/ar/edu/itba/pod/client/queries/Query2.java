@@ -18,6 +18,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 // Top airlines by amount of domestic flights
@@ -63,7 +64,7 @@ public class Query2 implements Query {
             bw.write(HEADER + "\n");
             for(FlightPercentageContainer container : result) {
                 bw.write(container.getOACI() + SEPARATOR +
-                        String.format("%.2f", Math.floor(container.getPercentage() * 100) / 100.0) + "%\n");
+                        String.format(Locale.US, "%.2f", Math.floor(container.getPercentage() * 100) / 100.0) + "%\n");
             }
         } catch (IOException e) {
             LOGGER.error("Error writing MapReduce results to file {}: {}", outputPath, e.getMessage());
