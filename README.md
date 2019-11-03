@@ -13,7 +13,7 @@ chmod u+x build
 ```bash
 pwd # => $PROJECT_ROOT/tpe2
 chmod u+x run-server
-./run-server # starts Hazelcast Management Center (if docker container is installed) and server
+./run-server '10.6.1.*' # starts server. Pass IP range as parameter to change <interfaces>
 ```
 
 ## Run Queries
@@ -23,7 +23,7 @@ pwd # => $PROJECT_ROOT/tpe2
 chmod u+x query*
 # query 1 writes output to $outPath/query1.csv and expects to find
 # aeropuertos.csv and movimientos.csv at $inPath
-./query1 -Daddresses='127.0.0.1' -DinPath=/home/mlund -DoutPath=.
+./query1 -Daddresses='10.6.1.10;10.6.1.11:5702' -DinPath=/home/mlund -DoutPath=.
 ```
 *Note*: there is a script for every query. Some may require additional properties to be set.
 
