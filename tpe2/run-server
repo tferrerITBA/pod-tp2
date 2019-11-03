@@ -1,4 +1,3 @@
 #!/bin/bash
 
-sudo docker run -p 127.0.0.1:8080:8080/tcp e28e49d694bc &>/dev/null &
-java -cp 'server/target/tpe2-server-1.0-SNAPSHOT/lib/jars/*' "ar.edu.itba.pod.server.Server" $*
+java -DIP_RANGE="$1" -cp 'server/target/tpe2-server-1.0-SNAPSHOT/lib/jars/*' "ar.edu.itba.pod.server.Server" "${@:2}"
